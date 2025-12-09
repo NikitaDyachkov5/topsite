@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>ТестQuiz</title>
+    <style>
+        .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.pagination button {
+    padding: 5px 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.pagination button:hover {
+    background-color: #2980b9;
+}
+
+.pagination button.active {
+    background-color: #2c3e50;
+}
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 60px;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header .logo a {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        .header .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        .header .nav-buttons a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            background-color: #34495e;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .header .nav-buttons a:hover {
+            background-color: #2c3e50;
+        }
+        .header .user-actions {
+            display: flex;
+            align-items: center;
+        }
+        .header .user-actions a.profile-link {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+        .header .user-actions a.profile-link:hover {
+            text-decoration: underline;
+        }
+        .header .user-actions img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .header .user-actions span {
+            font-size: 16px;
+        }
+        .header .user-actions button {
+            padding: 10px 20px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 15px;
+            font-size: 16px;
+        }
+        .header .user-actions button:hover {
+            background-color: #c0392b;
+        }
+        /* Стили для кнопок "Войти" и "Зарегистрироваться" для неавторизованных пользователей */
+        .header .user-actions a:not(.profile-link) {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            background-color: #34495e;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            margin-left: 5px;
+        }
+        .header .user-actions a:not(.profile-link):hover {
+            background-color: #2c3e50;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            flex: 1;
+        }
+        .section {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .category-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .category-card {
+            background-size: cover;
+            background-position: center;
+            padding: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            flex: 1 1 200px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(0,0,0,0.7);
+            transition: transform 0.3s;
+        }
+        .category-card:hover {
+            transform: scale(1.05);
+        }
+        .category-card.active {
+            border: 3px solid #2c3e50;
+        }
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .filters button, .filters select {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .filters button:hover {
+            background-color: #2980b9;
+        }
+        .filters button.active {
+            background-color: #2c3e50;
+        }
+        .step {
+            display: none;
+        }
+        .step.active {
+            display: block;
+        }
+        .next-step, .prev-step {
+            padding: 15px 30px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            display: inline-block;
+            margin: 10px 10px;
+        }
+        .next-step {
+            background-color: #27ae60;
+        }
+        .next-step:hover {
+            background-color: #219653;
+        }
+        .prev-step {
+            background-color: #e74c3c;
+        }
+        .prev-step:hover {
+            background-color: #c0392b;
+        }
+        .scoring-info {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .test-area, .results-area {
+            display: none;
+        }
+        .test-area.active, .results-area.active {
+            display: block;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .question p {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .options label {
+            display: block;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .options input {
+            margin-right: 10px;
+        }
+        .options label:hover {
+            background-color: #f9f9f9;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .next-button, .prev-button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .next-button:hover, .prev-button:hover {
+            background-color: #2980b9;
+        }
+        .prev-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .results-area p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .results-area button {
+            padding: 10px 20px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .results-area button:hover {
+            background-color: #c0392b;
+        }
+        .rating-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .rating-table th, .rating-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        .rating-table th {
+            background-color: #2c3e50;
+            color: white;
+        }
+        .rating-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .rating-table img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+        .search-sort {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .search-sort input, .search-sort select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .chat-area textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 10px;
+        }
+        .chat-area button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .chat-area button:hover {
+            background-color: #2980b9;
+        }
+        .chat-messages {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .chat-messages p {
+            margin: 5px 0;
+        }
+        .info-section {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .info-section h2 {
+            color: #2c3e50;
+        }
+        .info-section ul {
+            padding-left: 20px;
+        }
+        .info-section button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .info-section button:hover {
+            background-color: #2980b9;
+        }
+        .error { color: red; text-align: center; }
+        .success { color: green; text-align: center; }
+        .footer {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .footer p { margin: 0; }
+        .reviews-messages {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .reviews-messages p {
+            margin: 5px 0;
+        }
+        .hidden-section {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo"><a href="index.html">ТестQuiz</a></div>
+        <div class="nav-buttons" id="navButtons">
+            <a href="#testsSection">Тесты</a>
+            <a href="#rating">Рейтинг</a>
+            <a href="#reviewsSection">Отзывы</a>
+        </div>
+        <div class="user-actions" id="userInfo"></div>
+    </div>
+
+    <div class="container">
+        <div class="section" id="testsSection">
+            <h2>Тесты и викторины</h2>
+            <div class="step active" id="categoryStep">
+                <div class="category-list" id="categoryList"></div>
+                <button class="next-step" id="nextToDifficulty" disabled>Далее</button>
+            </div>
+            <div class="step" id="difficultyStep">
+                <div class="filters" id="difficultyFilter">
+                    <button data-difficulty="easy">Лёгкий</button>
+                    <button data-difficulty="medium">Средний</button>
+                    <button data-difficulty="hard">Сложный</button>
+                    <button data-difficulty="impossible">Невозможный</button>
+                    <button data-difficulty="mixed">Смешанная</button>
+                </div>
+                <button class="prev-step" id="backToCategory">Назад</button>
+                <button class="next-step" id="nextToCount">Далее</button>
+            </div>
+            <div class="step" id="countStep">
+                <div class="filters">
+                    <select id="questionCount">
+                        <option value="10">10 вопросов</option>
+                        <option value="20">20 вопросов</option>
+                        <option value="30">30 вопросов</option>
+                        <option value="40">40 вопросов</option>
+                        <option value="50">50 вопросов</option>
+                        <option value="60">60 вопросов</option>
+                        <option value="70">70 вопросов</option>
+                        <option value="80">80 вопросов</option>
+                        <option value="90">90 вопросов</option>
+                        <option value="100">100 вопросов</option>
+                    </select>
+                </div>
+                <div class="scoring-info" id="scoringInfo"></div>
+                <button class="prev-step" id="backToDifficulty">Назад</button>
+                <button class="next-step" id="startTest">Начать тест</button>
+            </div>
+            <div class="test-area" id="testArea">
+                <div class="question" id="questionText"></div>
+                <div class="options" id="options"></div>
+                <div class="nav-buttons">
+                    <button class="prev-button" id="prevButton" disabled>Назад</button>
+                    <button class="next-button" id="nextButton">Далее</button>
+                </div>
+            </div>
+            <div class="results-area" id="resultsArea">
+                <h3>Результаты теста</h3>
+                <p id="resultText"></p>
+                <p id="correctAnswers"></p>
+                <button id="backToTest">Вернуться к выбору теста</button>
+            </div>
+        </div>
+
+        <div class="section" id="rating">
+            <h2>Рейтинг</h2>
+            <div class="search-sort">
+                <input type="text" id="ratingSearch" placeholder="Поиск по имени">
+                <select id="ratingSort">
+                    <option value="desc">По убыванию</option>
+                    <option value="asc">По возрастанию</option>
+                </select>
+            </div>
+            <table class="rating-table" id="ratingTable">
+                <thead>
+                    <tr>
+                        <th>Место</th>
+                        <th>Пользователь</th>
+                        <th>Баллы</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="section" id="reviewsSection">
+            <h2>Отзывы</h2>
+            <div id="reviewsMessages"></div>
+        </div>
+
+        <div class="info-section">
+            <h2>Почему викторины — это круто?</h2>
+            <p>Викторины — это не просто игра, а способ развить мышление, память и скорость реакции! Участвуй, соревнуйся и становись умнее каждый день.</p>
+        </div>
+
+        <div class="info-section">
+            <h2>Как викторины развивают?</h2>
+            <ul>
+                <li><strong>Улучшение памяти:</strong> Постоянное запоминание фактов тренирует мозг.</li>
+                <li><strong>Логическое мышление:</strong> Анализ вопросов развивает аналитические навыки.</li>
+                <li><strong>Мотивация:</strong> Соревнование с другими вдохновляет на успех!</li>
+            </ul>
+        </div>
+
+        <div class="info-section join-section" id="joinSection">
+            <h2>Присоединяйся к викторине!</h2>
+            <p>Зарегистрируйся, проходи тесты и делись впечатлениями. Начни прямо сейчас!</p>
+            <button onclick="window.location.href='register.html'">Зарегистрироваться</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2025 ТестQuiz. Все права защищены. Архитектор: Nikita Dyachkov. ❤️</p>
+    </div>
+
+<script>
+const supabaseUrl = 'https://fkzbxyrcgpnuaguqrwdu.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZremJ4eXJjZ3BudWFndXFyd2R1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTIyMTQ3OSwiZXhwIjoyMDgwNzk3NDc5fQ.MHBNRnO-sI_aKWy6VENafqxbdtL6ei14eyjYULpB7sY';
+
+const user = JSON.parse(localStorage.getItem('user'));
+const userInfoElement = document.getElementById('userInfo');
+const categoryList = document.getElementById('categoryList');
+const nextToDifficulty = document.getElementById('nextToDifficulty');
+const backToCategory = document.getElementById('backToCategory');
+const difficultyFilter = document.getElementById('difficultyFilter');
+const nextToCount = document.getElementById('nextToCount');
+const backToDifficulty = document.getElementById('backToDifficulty');
+const questionCount = document.getElementById('questionCount');
+const scoringInfo = document.getElementById('scoringInfo');
+const startTest = document.getElementById('startTest');
+const testArea = document.getElementById('testArea');
+const questionText = document.getElementById('questionText');
+const options = document.getElementById('options');
+const prevButton = document.getElementById('prevButton');
+const nextButton = document.getElementById('nextButton');
+const resultsArea = document.getElementById('resultsArea');
+const resultText = document.getElementById('resultText');
+const correctAnswers = document.getElementById('correctAnswers');
+const backToTest = document.getElementById('backToTest');
+const ratingSearch = document.getElementById('ratingSearch');
+const ratingSort = document.getElementById('ratingSort');
+const ratingTable = document.querySelector('#ratingTable tbody');
+const reviewsMessages = document.getElementById('reviewsMessages');
+const joinSection = document.getElementById('joinSection');
+
+
+let currentQuestions = [];
+let currentQuestionIndex = 0;
+let rating = 0;
+let correctCount = 0;
+let userAnswers = [];
+let selectedCategory = '';
+let selectedDifficulty = 'easy';
+let selectedCount = 10;
+let allUsers = [];
+let currentReviewPage = 1;
+const itemsPerPage = 10;
+
+if (user) {
+    userInfoElement.innerHTML = `<a href="profile.html" class="profile-link"><img src="${user.photo_url || 'https://fkzbxyrcgpnuaguqrwdu.supabase.co/storage/v1/object/public/avatars/noPhoto.png'}" alt="Avatar"> <span>${user.fullname}</span></a><button id="logout">Выйти</button>`;
+    if (user.role === 'admin') {
+        document.getElementById('navButtons').innerHTML += `<a href="admin.html">Админ-панель</a>`;
+        document.getElementById('navButtons').innerHTML += `<a href="chat.html">Общение</a>`;
+    }
+    if (user.role === 'visitor') {
+        document.getElementById('navButtons').innerHTML += `<a href="chat.html">Общение</a>`;
+    }
+    if (joinSection) {
+        joinSection.classList.add('hidden-section'); // Скрываем блок для авторизованных
+    }
+} else {
+    userInfoElement.innerHTML = `<a href="login.html">Войти</a> <a href="register.html">Зарегистрироваться</a>`;
+}
+
+async function loadCategories() {
+    try {
+        const response = await fetch(`${supabaseUrl}/rest/v1/categories?select=id,name,background_url`, {
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+                'apikey': supabaseKey,
+                'Authorization': `Bearer ${supabaseKey}`
+            }
+        });
+        const categories = await response.json();
+        categoryList.innerHTML = categories.map(cat => `
+            <div class="category-card" data-category="${cat.name}" style="background-image: url('${cat.background_url || 'https://via.placeholder.com/200'}');">${cat.name}</div>
+        `).join('');
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                selectedCategory = card.dataset.category;
+                nextToDifficulty.disabled = false;
+            });
+        });
+    } catch (error) {
+        console.error('Error loading categories:', error);
+        categoryList.innerHTML = '<p class="error">Ошибка загрузки категорий</p>';
+    }
+}
+
+async function loadQuestions(category, difficulty, count) {
+    try {
+        let query = `${supabaseUrl}/rest/v1/tests?select=id,category,difficulty,question,option_a,option_b,option_c,option_d,correct_answer,points`;
+        if (category) query += `&category=eq.${encodeURIComponent(category)}`;
+        if (difficulty !== 'mixed') query += `&difficulty=eq.${difficulty}`;
+        query += `&order=id.asc`;
+
+        console.log('Supabase query:', query);
+        const response = await fetch(query, {
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+                'apikey': supabaseKey,
+                'Authorization': `Bearer ${supabaseKey}`
+            }
+        });
+        const questions = await response.json();
+        console.log('Loaded questions:', questions);
+
+        if (questions.length === 0) {
+            return { questions: [], totalAvailable: 0 };
+        }
+
+        const shuffled = questions.sort(() => Math.random() - 0.5).slice(0, count);
+        return { questions: shuffled, totalAvailable: questions.length };
+    } catch (error) {
+        console.error('Error loading questions:', error);
+        return { questions: [], totalAvailable: 0 };
+    }
+}
+
+async function loadRating() {
+    try {
+        const response = await fetch(`${supabaseUrl}/rest/v1/users?select=id,fullname,rating,photo_url`, {
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+                'apikey': supabaseKey,
+                'Authorization': `Bearer ${supabaseKey}`
+            }
+        });
+        if (!response.ok) {
+            console.error('Rating fetch error:', response.status, await response.text());
+            throw new Error(`HTTP ${response.status}`);
+        }
+        allUsers = await response.json();
+        console.log('Loaded users for rating:', allUsers);
+        renderRating(allUsers);
+    } catch (error) {
+        console.error('Error loading rating:', error);
+        ratingTable.innerHTML = '<tr><td colspan="3" class="error">Ошибка загрузки рейтинга</td></tr>';
+    }
+}
+
+function renderQuestion() {
+    if (currentQuestionIndex >= currentQuestions.length) {
+        showResults();
+        return;
+    }
+
+    const q = currentQuestions[currentQuestionIndex];
+    questionText.innerHTML = `<p>ID: ${q.id} | Вопрос ${currentQuestionIndex + 1}/${currentQuestions.length}: ${q.question}</p>`;
+    options.innerHTML = `
+        <label><input type="radio" name="answer" value="a" ${userAnswers[currentQuestionIndex] === 'a' ? 'checked' : ''}> ${q.option_a}</label>
+        <label><input type="radio" name="answer" value="b" ${userAnswers[currentQuestionIndex] === 'b' ? 'checked' : ''}> ${q.option_b}</label>
+        <label><input type="radio" name="answer" value="c" ${userAnswers[currentQuestionIndex] === 'c' ? 'checked' : ''}> ${q.option_c}</label>
+        <label><input type="radio" name="answer" value="d" ${userAnswers[currentQuestionIndex] === 'd' ? 'checked' : ''}> ${q.option_d}</label>
+    `;
+    prevButton.disabled = currentQuestionIndex === 0;
+}
+
+async function showResults() {
+    testArea.classList.remove('active');
+    resultsArea.classList.add('active');
+    const totalQuestions = currentQuestions.length;
+
+    // Recalculate correctCount for accuracy
+    correctCount = 0;
+    let finalRating = 0;
+    currentQuestions.forEach((q, i) => {
+        if (userAnswers[i] === q.correct_answer) {
+            correctCount++;
+            finalRating += q.points;
+        }
+    });
+    const percentage = (correctCount / totalQuestions) * 100;
+
+    resultText.innerHTML = `Вы набрали ${finalRating} баллов из ${totalQuestions}! (${percentage.toFixed(1)}% правильных ответов)`;
+    correctAnswers.innerHTML = currentQuestions.map((q, i) => {
+        const userAnswer = userAnswers[i] ? q[`option_${userAnswers[i]}`] : 'Нет ответа';
+        const isCorrect = userAnswer === q[`option_${q.correct_answer}`];
+        return `
+            <p>${isCorrect ? '✅' : '❌'} Вопрос ${i + 1}: ${q.question} — ${q[`option_${q.correct_answer}`]} (Ваш ответ: ${userAnswer})</p>
+        `;
+    }).join('');
+
+    if (user) {
+        try {
+            const newRating = (user.rating || 0) + finalRating;
+            console.log('Updating rating:', { userId: user.id, newRating, finalRating });
+            const response = await fetch(`${supabaseUrl}/rest/v1/users?id=eq.${user.id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'apikey': supabaseKey,
+                    'Authorization': `Bearer ${supabaseKey}`,
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({ rating: newRating })
+            });
+
+            if (response.ok) {
+                user.rating = newRating;
+                localStorage.setItem('user', JSON.stringify(user));
+                resultText.innerHTML += `<p>Ваш текущий рейтинг: ${user.rating} баллов</p>`;
+                loadRating();
+            } else {
+                const errorText = await response.text();
+                console.error('Rating update error:', response.status, errorText);
+                resultText.innerHTML += `<p class="error">Ошибка обновления рейтинга: ${errorText}</p>`;
+            }
+        } catch (error) {
+            console.error('Error updating rating:', error);
+            resultText.innerHTML += `<p class="error">Ошибка обновления рейтинга: ${error.message}</p>`;
+        }
+    }
+}
+
+function renderRating(users) {
+    const searchTerm = ratingSearch.value.toLowerCase();
+    const sortOrder = ratingSort.value;
+    const filteredUsers = users.filter(u => 
+        u.fullname && u.fullname.toLowerCase().includes(searchTerm) && u.rating != null
+    );
+    const sortedUsers = filteredUsers.sort((a, b) => 
+        sortOrder === 'desc' ? b.rating - a.rating : a.rating - b.rating
+    );
+
+    ratingTable.innerHTML = sortedUsers.map((u, i) => `
+        <tr>
+            <td>${i + 1}</td>
+            <td><img src="${u.photo_url || 'https://fkzbxyrcgpnuaguqrwdu.supabase.co/storage/v1/object/public/avatars/noPhoto.png'}" alt="Avatar">${u.fullname}</td>
+            <td>${u.rating || 0}</td>
+        </tr>
+    `).join('') || '<tr><td colspan="3">Нет данных</td></tr>';
+}
+
+nextToDifficulty.addEventListener('click', () => {
+    document.getElementById('categoryStep').classList.remove('active');
+    document.getElementById('difficultyStep').classList.add('active');
+});
+
+backToCategory.addEventListener('click', () => {
+    document.getElementById('difficultyStep').classList.remove('active');
+    document.getElementById('categoryStep').classList.add('active');
+});
+
+difficultyFilter.addEventListener('click', (e) => {
+    if (e.target.tagName === 'BUTTON') {
+        difficultyFilter.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+        e.target.classList.add('active');
+        selectedDifficulty = e.target.dataset.difficulty;
+    }
+});
+
+nextToCount.addEventListener('click', () => {
+    if (!selectedDifficulty) {
+        scoringInfo.innerHTML = '<p class="error">Выберите сложность</p>';
+        return;
+    }
+    document.getElementById('difficultyStep').classList.remove('active');
+    document.getElementById('countStep').classList.add('active');
+    const thresholds = {
+        easy: 70,
+        medium: 60,
+        hard: 50,
+        impossible: 40,
+        mixed: 60
+    };
+    const threshold = thresholds[selectedDifficulty];
+    const minCorrect = Math.ceil((threshold / 100) * parseInt(questionCount.value));
+    scoringInfo.innerHTML = `
+        <p><strong>Система баллов (${selectedDifficulty === 'mixed' ? 'Смешанная' : selectedDifficulty}):</strong></p>
+        <p>Для начисления баллов нужно ответить правильно на ≥${threshold}% вопросов (${minCorrect} из ${questionCount.value}).</p>
+        <p>Каждый правильный ответ добавляет баллы согласно сложности вопроса.</p>
+    `;
+});
+
+backToDifficulty.addEventListener('click', () => {
+    document.getElementById('countStep').classList.remove('active');
+    document.getElementById('difficultyStep').classList.add('active');
+    scoringInfo.innerHTML = '';
+});
+
+startTest.addEventListener('click', async () => {
+    if (!selectedCategory) {
+        scoringInfo.innerHTML = '<p class="error">Выберите категорию</p>';
+        return;
+    }
+    selectedCount = parseInt(questionCount.value);
+    const { questions, totalAvailable } = await loadQuestions(selectedCategory, selectedDifficulty, selectedCount);
+    
+    if (totalAvailable === 0) {
+        scoringInfo.innerHTML = '<p class="error">Для выбранной категории и сложности нет доступных вопросов</p>';
+        return;
+    }
+    
+    if (selectedCount > totalAvailable) {
+        scoringInfo.innerHTML = `<p class="error">Для категории "${selectedCategory}" и сложности "${selectedDifficulty}" доступно только ${totalAvailable} вопросов. Пожалуйста, выберите меньшее количество вопросов.</p>`;
+        return;
+    }
+
+    document.getElementById('countStep').classList.remove('active');
+    testArea.classList.add('active');
+    resultsArea.classList.remove('active');
+    currentQuestions = questions;
+    
+    if (currentQuestions.length > 0) {
+        currentQuestionIndex = 0;
+        rating = 0;
+        correctCount = 0;
+        userAnswers = new Array(selectedCount).fill(null);
+        renderQuestion();
+    }
+});
+
+nextButton.addEventListener('click', () => {
+    const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+    if (!selectedAnswer && currentQuestionIndex < currentQuestions.length - 1) {
+        questionText.innerHTML += '<p class="error">Выберите ответ</p>';
+        return;
+    }
+
+    if (selectedAnswer) {
+        const previousAnswer = userAnswers[currentQuestionIndex];
+        userAnswers[currentQuestionIndex] = selectedAnswer.value;
+        const q = currentQuestions[currentQuestionIndex];
+        const isCorrect = selectedAnswer.value === q.correct_answer;
+
+        // Update correctCount based on answer changes
+        if (isCorrect && !previousAnswer) {
+            correctCount++; // First time answering correctly
+        } else if (isCorrect && previousAnswer && previousAnswer !== q.correct_answer) {
+            correctCount++; // Changing from incorrect to correct
+        } else if (!isCorrect && previousAnswer === q.correct_answer) {
+            correctCount--; // Changing from correct to incorrect
+        }
+    }
+
+    currentQuestionIndex++;
+    renderQuestion();
+});
+
+prevButton.addEventListener('click', () => {
+    currentQuestionIndex--;
+    renderQuestion();
+});
+
+backToTest.addEventListener('click', () => {
+    testArea.classList.remove('active');
+    resultsArea.classList.remove('active');
+    document.getElementById('categoryStep').classList.add('active');
+    questionText.innerHTML = '';
+    options.innerHTML = '';
+    scoringInfo.innerHTML = '';
+});
+
+ratingSearch.addEventListener('input', () => {
+    renderRating(allUsers);
+});
+
+ratingSort.addEventListener('change', () => {
+    renderRating(allUsers);
+});
+
+async function loadReviews(page = 1) {
+    try {
+        const offset = (page - 1) * itemsPerPage;
+        const response = await fetch(`${supabaseUrl}/rest/v1/reviews?select=message,timestamp,users(fullname,photo_url),rating&order=timestamp.asc&limit=${itemsPerPage}&offset=${offset}`, {
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+                'apikey': supabaseKey,
+                'Authorization': `Bearer ${supabaseKey}`
+            }
+        });
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP error! Status: ${response.status}, ${errorText}`);
+        }
+        const reviews = await response.json();
+        const totalReviews = await getTotalReviews();
+
+        console.log('Raw reviews data:', reviews); // Для отладки
+
+        if (!reviews || reviews.length === 0) {
+            reviewsMessages.innerHTML = '<p class="error">Нет отзывов</p>';
+            renderPagination('reviews', page, Math.ceil(totalReviews / itemsPerPage));
+            return;
+        }
+reviewsMessages.innerHTML = reviews.map(r => `
+    <p>
+        <img src="${r.users?.photo_url || 'https://fkzbxyrcgpnuaguqrwdu.supabase.co/storage/v1/object/public/avatars/noPhoto.png'}" alt="${r.users?.fullname || 'Аноним'}'s avatar" style="width: 30px; height: 30px; border-radius: 50%; vertical-align: middle;">
+        <strong>${r.users?.fullname || 'Аноним'}</strong> 
+        (${new Date(r.timestamp).toLocaleString()}): 
+        ${r.message || 'Отзыв пуст'} 
+        <span style="color: gold;">${'★'.repeat(r.rating || 0)}${'☆'.repeat(5 - (r.rating || 0))}</span>
+    </p>
+`).join('');
+        reviewsMessages.scrollTop = reviewsMessages.scrollHeight;
+        renderPagination('reviews', page, Math.ceil(totalReviews / itemsPerPage));
+    } catch (error) {
+        console.error('Error loading reviews:', error);
+        reviewsMessages.innerHTML = `<p class="error">Ошибка загрузки отзывов: ${error.message}</p>`;
+    }
+}
+
+async function getTotalReviews() {
+    try {
+        const response = await fetch(`${supabaseUrl}/rest/v1/reviews?select=count`, {
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+                'apikey': supabaseKey,
+                'Authorization': `Bearer ${supabaseKey}`
+            }
+        });
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP error! Status: ${response.status}, ${errorText}`);
+        }
+        const { count } = await response.json();
+        return count || 0;
+    } catch (error) {
+        console.error('Error getting total reviews:', error);
+        return 0;
+    }
+}
+
+function renderPagination(type, currentPage, totalPages) {
+    const container = type === 'reviews' ? reviewsMessages : null;
+    let pagination = container ? container.querySelector('.pagination') : null;
+    if (!pagination) {
+        pagination = document.createElement('div');
+        pagination.className = 'pagination';
+        container.appendChild(pagination);
+    }
+    pagination.innerHTML = '';
+
+    if (totalPages <= 1) return;
+
+    if (currentPage > 1) {
+        const prevButton = document.createElement('button');
+        prevButton.textContent = '← Предыдущая';
+        prevButton.addEventListener('click', () => {
+            currentReviewPage--;
+            loadReviews(currentReviewPage);
+        });
+        pagination.appendChild(prevButton);
+    }
+
+    for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.className = currentPage === i ? 'active' : '';
+        pageButton.addEventListener('click', () => {
+            currentReviewPage = i;
+            loadReviews(currentReviewPage);
+        });
+        pagination.appendChild(pageButton);
+    }
+
+    if (currentPage < totalPages) {
+        const nextButton = document.createElement('button');
+        nextButton.textContent = 'Следующая →';
+        nextButton.addEventListener('click', () => {
+            currentReviewPage++;
+            loadReviews(currentReviewPage);
+        });
+        pagination.appendChild(nextButton);
+    }
+}
+
+document.getElementById('logout')?.addEventListener('click', async () => {
+    if (user) {
+        try {
+            const response = await fetch(`${supabaseUrl}/rest/v1/users?id=eq.${user.id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'apikey': supabaseKey,
+                    'Authorization': `Bearer ${supabaseKey}`,
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({ online: false })
+            });
+
+            if (!response.ok) {
+                console.error('Logout error:', response.status, await response.text());
+                throw new Error(`HTTP ${response.status}`);
+            }
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        } catch (error) {
+            console.error('Logout Error:', error);
+            reviewsMessages.innerHTML = '<p class="error">Ошибка выхода</p>'; // Исправлено на reviewsMessages
+        }
+    }
+});
+
+loadCategories();
+loadRating();
+loadReviews();
+</script>
+</body>
+</html>

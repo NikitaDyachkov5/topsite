@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Админ-панель - ТестQuiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 60px;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header .logo a {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        .header .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        .header .nav-buttons a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            background-color: #34495e;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .header .nav-buttons a:hover {
+            background-color: #2c3e50;
+        }
+        .header .user-actions {
+            display: flex;
+            align-items: center;
+        }
+        .header .user-actions a.profile-link {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+        .header .user-actions a.profile-link:hover {
+            text-decoration: underline;
+        }
+        .header .user-actions img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .header .user-actions span {
+            font-size: 16px;
+        }
+        .header .user-actions button {
+            padding: 10px 20px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 15px;
+            font-size: 16px;
+        }
+        .header .user-actions button:hover {
+            background-color: #c0392b;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            flex: 1;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #2c3e50;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.3s;
+        }
+        .tab.active {
+            border-bottom: 2px solid #3498db;
+            font-weight: bold;
+        }
+        .tab:hover {
+            color: #3498db;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .section {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        form {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+        label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        input, select, textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 100%;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            grid-column: 2;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button.delete {
+            background-color: #e74c3c;
+        }
+        button.delete:hover {
+            background-color: #c0392b;
+        }
+        .error { color: red; text-align: center; grid-column: 1 / -1; }
+        .success { color: green; text-align: center; grid-column: 1 / -1; }
+        .list {
+            margin-top: 20px;
+        }
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .search-sort {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .search-sort input, .search-sort select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .footer {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .footer p { margin: 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo"><a href="index.html">ТестQuiz</a></div>
+        <div class="nav-buttons" id="navButtons">
+            <a href="index.html#testsSection">Тесты</a>
+            <a href="index.html#rating">Рейтинг</a>
+            <a href="index.html#reviewsSection">Отзывы</a>
+            <a href="admin.html">Админ-панель</a>
+        </div>
+        <div class="user-actions" id="userInfo"></div>
+    </div>
+
+    <div class="container">
+        <nav class="tabs">
+            <div class="tab active" data-tab="quiz">Викторина</div>
+            <div class="tab" data-tab="users">Пользователи</div>
+        </nav>
+
+        <div class="tab-content active" id="quiz">
+            <div class="section">
+                <h2>Управление категориями</h2>
+                <form id="categoryForm">
+                    <label for="categoryName">Название категории:</label>
+                    <input type="text" id="categoryName" placeholder="Например, История" required>
+                    <label for="categoryBackground">Фон категории:</label>
+                    <input type="file" id="categoryBackground" accept="image/*" required>
+                    <button type="submit">Добавить категорию</button>
+                </form>
+                <p id="categoryMessage" class="error"></p>
+                <div class="search-sort">
+                    <input type="text" id="categorySearch" placeholder="Поиск по названию категории">
+                    <select id="categorySort">
+                        <option value="id">Сортировать по ID</option>
+                        <option value="name">Сортировать по названию</option>
+                    </select>
+                </div>
+                <div id="categoryList" class="list"></div>
+            </div>
+
+            <div class="section">
+                <h2>Управление вопросами</h2>
+                <form id="questionForm">
+                    <label for="questionCategory">Категория:</label>
+                    <select id="questionCategory" required>
+                        <option value="">Выберите категорию</option>
+                    </select>
+                    <label for="questionDifficulty">Сложность:</label>
+                    <select id="questionDifficulty" required>
+                        <option value="">Выберите сложность</option>
+                        <option value="easy">Лёгкий</option>
+                        <option value="medium">Средний</option>
+                        <option value="hard">Сложный</option>
+                        <option value="impossible">Невозможный</option>
+                    </select>
+                    <label for="questionText">Вопрос:</label>
+                    <textarea id="questionText" placeholder="Текст вопроса" required></textarea>
+                    <label for="optionA">Вариант A:</label>
+                    <input type="text" id="optionA" placeholder="Первый вариант ответа" required>
+                    <label for="optionB">Вариант B:</label>
+                    <input type="text" id="optionB" placeholder="Второй вариант ответа" required>
+                    <label for="optionC">Вариант C:</label>
+                    <input type="text" id="optionC" placeholder="Третий вариант ответа" required>
+                    <label for="optionD">Вариант D:</label>
+                    <input type="text" id="optionD" placeholder="Четвёртый вариант ответа" required>
+                    <label for="correctAnswer">Правильный ответ:</label>
+                    <select id="correctAnswer" required>
+                        <option value="">Выберите правильный ответ</option>
+                        <option value="a">A</option>
+                        <option value="b">B</option>
+                        <option value="c">C</option>
+                        <option value="d">D</option>
+                    </select>
+                    <label for="points">Баллы:</label>
+                    <input type="number" id="points" placeholder="1-5" min="1" max="5" required>
+                    <button type="submit">Добавить вопрос</button>
+                </form>
+                <p id="questionMessage" class="error"></p>
+                <div class="search-sort">
+                    <input type="text" id="questionSearch" placeholder="Поиск по ID или тексту вопроса">
+                    <select id="questionSort">
+                        <option value="id">Сортировать по ID</option>
+                        <option value="category">Сортировать по категории</option>
+                        <option value="question">Сортировать по вопросу</option>
+                    </select>
+                </div>
+                <div id="questionList" class="list"></div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="users">
+            <div class="section">
+                <h2>Управление пользователями</h2>
+                <form id="userForm" style="display: none;">
+                    <label for="userId">ID пользователя:</label>
+                    <input type="text" id="userId" readonly>
+                    <label for="userEmail">Email:</label>
+                    <input type="email" id="userEmail" readonly>
+                    <label for="userFullname">Полное имя:</label>
+                    <input type="text" id="userFullname" placeholder="Введите имя" required>
+                    <label for="userRole">Роль:</label>
+                    <select id="userRole" required>
+                        <option value="admin">Админ</option>
+                        <option value="visitor">Посетитель</option>
+                    </select>
+                    <label for="userPassword">Новый пароль (оставьте пустым, если не менять):</label>
+                    <input type="password" id="userPassword" placeholder="Введите новый пароль">
+                    <button type="submit">Сохранить изменения</button>
+                    <button type="button" id="cancelEdit">Отмена</button>
+                </form>
+                <p id="userMessage" class="error"></p>
+                <div class="search-sort">
+                    <input type="text" id="userSearch" placeholder="Поиск по email или имени">
+                    <select id="userSort">
+                        <option value="id">Сортировать по ID</option>
+                        <option value="role">Сортировать по роли</option>
+                    </select>
+                </div>
+                <div id="userList" class="list"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2025 ТестQuiz. Все права защищены. Архитектор: Nikita Dyachkov. ❤️</p>
+    </div>
+
+<script>
+    const supabaseUrl = 'https://fkzbxyrcgpnuaguqrwdu.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZremJ4eXJjZ3BudWFndXFyd2R1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTIyMTQ3OSwiZXhwIjoyMDgwNzk3NDc5fQ.MHBNRnO-sI_aKWy6VENafqxbdtL6ei14eyjYULpB7sY';
+
+    const user = JSON.parse(localStorage.getItem('user'));
+    const userInfoElement = document.getElementById('userInfo');
+    const categoryForm = document.getElementById('categoryForm');
+    const categoryMessage = document.getElementById('categoryMessage');
+    const categoryList = document.getElementById('categoryList');
+    const questionForm = document.getElementById('questionForm');
+    const questionMessage = document.getElementById('questionMessage');
+    const questionList = document.getElementById('questionList');
+    const questionCategory = document.getElementById('questionCategory');
+    const questionSearch = document.getElementById('questionSearch');
+    const questionSort = document.getElementById('questionSort');
+    const userForm = document.getElementById('userForm');
+    const userMessage = document.getElementById('userMessage');
+    const userList = document.getElementById('userList');
+    const userSearch = document.getElementById('userSearch');
+    const userSort = document.getElementById('userSort');
+    const categorySearch = document.getElementById('categorySearch');
+    const categorySort = document.getElementById('categorySort');
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    let allQuestions = [];
+    let allUsers = [];
+    let allCategories = [];
+
+    if (!user || user.role !== 'admin') {
+        categoryMessage.textContent = 'Доступ только для администраторов';
+        categoryMessage.className = 'error';
+        setTimeout(() => window.location.href = 'index.html', 1000);
+    } else {
+        userInfoElement.innerHTML = `<a href="profile.html" class="profile-link"><img src="${user.photo_url || 'https://fkzbxyrcgpnuaguqrwdu.supabase.co/storage/v1/object/public/avatars/noPhoto.png'}" alt="Avatar"> <span>${user.fullname}</span></a><button id="logout">Выйти</button>`;
+        document.getElementById('navButtons').innerHTML += `<a href="chat.html">Общение</a>`;
+
+        loadCategories();
+        loadQuestions();
+        loadUsers();
+    }
+
+    // Переключение вкладок
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(tc => tc.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.tab).classList.add('active');
+        });
+    });
+
+    async function loadCategories() {
+        try {
+            const response = await fetch(`${supabaseUrl}/rest/v1/categories?select=id,name,background_url`, {
+                headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` }
+            });
+            allCategories = await response.json();
+            questionCategory.innerHTML = `<option value="">Выберите категорию</option>` + allCategories.map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('');
+            renderCategories(allCategories);
+        } catch (error) {
+            console.error('Error loading categories:', error);
+            categoryMessage.textContent = 'Ошибка загрузки категорий';
+            categoryMessage.className = 'error';
+        }
+    }
+
+    async function loadQuestions() {
+        try {
+            const response = await fetch(`${supabaseUrl}/rest/v1/tests?select=id,category,difficulty,question,created_by&order=category.asc,id.asc`, {
+                headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` }
+            });
+            allQuestions = await response.json();
+            console.log('Loaded questions:', allQuestions); // Отладка
+            renderQuestions(allQuestions);
+        } catch (error) {
+            console.error('Error loading questions:', error);
+            questionMessage.textContent = 'Ошибка загрузки вопросов';
+            questionMessage.className = 'error';
+        }
+    }
+
+    async function loadUsers() {
+        try {
+            const response = await fetch(`${supabaseUrl}/rest/v1/users?select=id,email,fullname,role,online`, {
+                headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` }
+            });
+            allUsers = await response.json();
+            console.log('Loaded users:', allUsers); // Отладка
+            renderUsers(allUsers);
+        } catch (error) {
+            console.error('Error loading users:', error);
+            userMessage.textContent = 'Ошибка загрузки пользователей';
+            userMessage.className = 'error';
+        }
+    }
+
+    function renderCategories(categories) {
+        categoryList.innerHTML = categories.map(cat => `
+            <div class="list-item">
+                <span>ID: ${cat.id} | ${cat.name} (<a href="${cat.background_url}" target="_blank">Фон</a>)</span>
+                <button class="delete" onclick="deleteCategory(${cat.id})">Удалить</button>
+            </div>
+        `).join('');
+    }
+
+    function renderQuestions(questions) {
+        questionList.innerHTML = questions.map(q => `
+            <div class="list-item">
+                <span>ID: ${q.id} | ${q.category} (${q.difficulty}): ${q.question} (Created at: ${q.created_by || 'null'})</span>
+                <button class="delete" onclick="deleteQuestion(${q.id})">Удалить</button>
+            </div>
+        `).join('');
+    }
+
+    function renderUsers(users) {
+        userList.innerHTML = users.map(u => `
+            <div class="list-item">
+                <span>ID: ${u.id} | ${u.email} (${u.fullname || 'Без имени'}, ${u.role}, ${u.online ? 'Онлайн' : 'Офлайн'})</span>
+                <div>
+                    <button onclick="editUser(${u.id})">Редактировать</button>
+                    <button class="delete" onclick="deleteUser(${u.id})">Удалить</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    categoryForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('categoryName').value.trim();
+        const background = document.getElementById('categoryBackground').files[0];
+
+        if (!name || !background) {
+            categoryMessage.textContent = 'Заполните все поля';
+            categoryMessage.className = 'error';
+            return;
+        }
+
+        try {
+            const sanitizedFileName = `${Date.now()}_${background.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+            console.log('Bucket path:', `${supabaseUrl}/storage/v1/object/categories/${sanitizedFileName}`);
+
+            const uploadResponse = await fetch(`${supabaseUrl}/storage/v1/object/categories/${sanitizedFileName}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${supabaseKey}`,
+                    'apikey': supabaseKey
+                },
+                body: background
+            });
+
+            console.log('Upload response:', uploadResponse);
+            if (!uploadResponse.ok) {
+                const errorText = await uploadResponse.text();
+                console.log('Upload error text:', errorText);
+                throw new Error(`Ошибка загрузки фона: ${errorText || uploadResponse.statusText}`);
+            }
+
+            const backgroundUrl = `${supabaseUrl}/storage/v1/object/public/categories/${sanitizedFileName}`;
+            console.log('Background URL:', backgroundUrl);
+            const response = await fetch(`${supabaseUrl}/rest/v1/categories`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': supabaseKey,
+                    'Authorization': `Bearer ${supabaseKey}`,
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({ name, background_url: backgroundUrl })
+            });
+
+            if (response.ok) {
+                categoryMessage.textContent = 'Категория добавлена!';
+                categoryMessage.className = 'success';
+                categoryForm.reset();
+                loadCategories();
+            } else {
+                const errorData = await response.json();
+                console.log('Category error data:', errorData);
+                categoryMessage.textContent = `Ошибка добавления категории: ${errorData.message || response.statusText}`;
+                categoryMessage.className = 'error';
+            }
+        } catch (error) {
+            console.error('Error adding category:', error);
+            categoryMessage.textContent = 'Ошибка: ' + error.message;
+            categoryMessage.className = 'error';
+        }
+    });
+
+    questionForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const category = document.getElementById('questionCategory').value;
+        const difficulty = document.getElementById('questionDifficulty').value;
+        const question = document.getElementById('questionText').value.trim();
+        const optionA = document.getElementById('optionA').value.trim();
+        const optionB = document.getElementById('optionB').value.trim();
+        const optionC = document.getElementById('optionC').value.trim();
+        const optionD = document.getElementById('optionD').value.trim();
+        const correctAnswer = document.getElementById('correctAnswer').value;
+        const points = parseInt(document.getElementById('points').value);
+
+        if (!category || !difficulty || !question || !optionA || !optionB || !optionC || !optionD || !correctAnswer || !points) {
+            questionMessage.textContent = 'Заполните все поля';
+            questionMessage.className = 'error';
+            return;
+        }
+
+        try {
+            const response = await fetch(`${supabaseUrl}/rest/v1/tests`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': supabaseKey,
+                    'Authorization': `Bearer ${supabaseKey}`,
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({
+                    category,
+                    difficulty,
+                    question,
+                    option_a: optionA,
+                    option_b: optionB,
+                    option_c: optionC,
+                    option_d: optionD,
+                    correct_answer: correctAnswer,
+                    points
+                })
+            });
+
+            if (response.ok) {
+                questionMessage.textContent = 'Вопрос добавлен!';
+                questionMessage.className = 'success';
+                questionForm.reset();
+                loadQuestions();
+            } else {
+                const errorText = await response.text();
+                console.error('Error adding question:', errorText);
+                questionMessage.textContent = `Ошибка добавления вопроса: ${errorText}`;
+                questionMessage.className = 'error';
+            }
+        } catch (error) {
+            console.error('Error adding question:', error);
+            questionMessage.textContent = 'Ошибка: ' + error.message;
+            questionMessage.className = 'error';
+        }
+    });
+
+    userForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('userId').value;
+        const fullname = document.getElementById('userFullname').value.trim();
+        const role = document.getElementById('userRole').value;
+        const newPassword = document.getElementById('userPassword').value.trim();
+
+        if (!fullname || !role) {
+            userMessage.textContent = 'Заполните все поля';
+            userMessage.className = 'error';
+            return;
+        }
+
+        try {
+            // Обновление данных пользователя (fullname, role)
+            const userResponse = await fetch(`${supabaseUrl}/rest/v1/users?id=eq.${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': supabaseKey,
+                    'Authorization': `Bearer ${supabaseKey}`,
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({ fullname, role })
+            });
+
+            if (userResponse.ok && newPassword) {
+                // Обновление пароля через Supabase Auth API
+                // Предполагается, что email пользователя совпадает с auth.users
+                const userEmail = document.getElementById('userEmail').value;
+                const authResponse = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': supabaseKey,
+                        'Authorization': `Bearer ${supabaseKey}`
+                    }
+                });
+                const authUsers = await authResponse.json();
+                const authUser = authUsers.users.find(u => u.email === userEmail);
+
+                if (authUser) {
+                    const updatePasswordResponse = await fetch(`${supabaseUrl}/auth/v1/admin/users/${authUser.id}/update`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': supabaseKey,
+                            'Authorization': `Bearer ${supabaseKey}`
+                        },
+                        body: JSON.stringify({
+                            password: newPassword
+                        })
+                    });
+
+                    if (!updatePasswordResponse.ok) {
+                        throw new Error('Ошибка обновления пароля');
+                    }
+                } else {
+                    userMessage.textContent = 'Пользователь не найден в системе авторизации';
+                    userMessage.className = 'error';
+                    return;
+                }
+            }
+
+            if (userResponse.ok) {
+                userMessage.textContent = 'Пользователь обновлён!';
+                userMessage.className = 'success';
+                userForm.reset();
+                userForm.style.display = 'none';
+                loadUsers();
+            } else {
+                userMessage.textContent = 'Ошибка обновления пользователя';
+                userMessage.className = 'error';
+            }
+        } catch (error) {
+            console.error('Error updating user:', error);
+            userMessage.textContent = 'Ошибка: ' + error.message;
+            userMessage.className = 'error';
+        }
+    });
+
+    document.getElementById('cancelEdit').addEventListener('click', () => {
+        userForm.reset();
+        userForm.style.display = 'none';
+        userMessage.textContent = '';
+    });
+
+    async function deleteCategory(id) {
+        if (!confirm('Удалить категорию?')) return;
+        try {
+            const response = await fetch(`${supabaseUrl}/rest/v1/categories?id=eq.${id}`, {
+                method: 'DELETE',
+                headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` }
+            });
+
+            if (response.ok) {
+                categoryMessage.textContent = 'Категория удалена!';
+                categoryMessage.className = 'success';
+                loadCategories();
+            } else {
+                categoryMessage.textContent = 'Ошибка удаления категории';
+                categoryMessage.className = 'error';
+            }
+        } catch (error) {
+            console.error('Error deleting category:', error);
+            categoryMessage.textContent = 'Ошибка: ' + error.message;
+            categoryMessage.className = 'error';
+        }
+    }
+
+    async function deleteQuestion(id) {
+        if (!confirm('Удалить вопрос?')) return;
+        try {
+            const response = await fetch(`${supabaseUrl}/rest/v1/tests?id=eq.${id}`, {
+                method: 'DELETE',
+                headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` }
+            });
+
+            if (response.ok) {
+                questionMessage.textContent = 'Вопрос удалён!';
+                questionMessage.className = 'success';
+                loadQuestions();
+            } else {
+                questionMessage.textContent = 'Ошибка удаления вопроса';
+                questionMessage.className = 'error';
+            }
+        } catch (error) {
+            console.error('Error deleting question:', error);
+            questionMessage.textContent = 'Ошибка: ' + error.message;
+            questionMessage.className = 'error';
+        }
+    }
+
+    function editUser(id) {
+        const u = allUsers.find(user => user.id === parseInt(id));
+        if (u) {
+            document.getElementById('userId').value = u.id;
+            document.getElementById('userEmail').value = u.email;
+            document.getElementById('userFullname').value = u.fullname || '';
+            document.getElementById('userRole').value = u.role;
+            document.getElementById('userPassword').value = ''; // Очистка поля пароля
+            userForm.style.display = 'grid';
+            userMessage.textContent = '';
+        }
+    }
+
+    async function deleteUser(id) {
+        if (!confirm('Удалить пользователя?')) return;
+        try {
+            const response = await fetch(`${supabaseUrl}/rest/v1/users?id=eq.${id}`, {
+                method: 'DELETE',
+                headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` }
+            });
+
+            if (response.ok) {
+                userMessage.textContent = 'Пользователь удалён!';
+                userMessage.className = 'success';
+                loadUsers();
+            } else {
+                userMessage.textContent = 'Ошибка удаления пользователя';
+                userMessage.className = 'error';
+            }
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            userMessage.textContent = 'Ошибка: ' + error.message;
+            userMessage.className = 'error';
+        }
+    }
+
+    categorySearch.addEventListener('input', () => {
+        const searchTerm = categorySearch.value.toLowerCase();
+        const filteredCategories = allCategories.filter(c => 
+            c.name.toLowerCase().includes(searchTerm)
+        );
+        renderCategories(filteredCategories);
+    });
+
+    categorySort.addEventListener('change', () => {
+        const sortBy = categorySort.value;
+        const sortedCategories = [...allCategories].sort((a, b) => {
+            if (sortBy === 'id') return a.id - b.id;
+            if (sortBy === 'name') return a.name.localeCompare(b.name);
+        });
+        renderCategories(sortedCategories);
+    });
+
+    questionSearch.addEventListener('input', () => {
+        const searchTerm = questionSearch.value.toLowerCase();
+        const filteredQuestions = allQuestions.filter(q => 
+            q.id.toString().includes(searchTerm) || 
+            q.question.toLowerCase().includes(searchTerm)
+        );
+        renderQuestions(filteredQuestions);
+    });
+
+    questionSort.addEventListener('change', () => {
+        const sortBy = questionSort.value;
+        const difficultyOrder = { easy: 1, medium: 2, hard: 3, impossible: 4 };
+        const sortedQuestions = [...allQuestions].sort((a, b) => {
+            if (sortBy === 'id') return a.id - b.id;
+            if (sortBy === 'category') {
+                const catCompare = a.category.localeCompare(b.category);
+                if (catCompare !== 0) return catCompare;
+                const idCompare = a.id - b.id;
+                if (idCompare !== 0) return idCompare;
+                return difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty];
+            }
+            if (sortBy === 'question') return a.question.localeCompare(b.question);
+        });
+        console.log('Sorted questions:', sortedQuestions); // Отладка
+        renderQuestions(sortedQuestions);
+    });
+
+    userSearch.addEventListener('input', () => {
+        const searchTerm = userSearch.value.toLowerCase();
+        const filteredUsers = allUsers.filter(u => 
+            u.email.toLowerCase().includes(searchTerm) || 
+            (u.fullname && u.fullname.toLowerCase().includes(searchTerm))
+        );
+        renderUsers(filteredUsers);
+    });
+
+    userSort.addEventListener('change', () => {
+        const sortBy = userSort.value;
+        const sortedUsers = [...allUsers].sort((a, b) => {
+            if (sortBy === 'id') return a.id - b.id;
+            if (sortBy === 'role') return a.role.localeCompare(b.role);
+        });
+        console.log('Sorted users:', sortedUsers); // Отладка
+        renderUsers(sortedUsers);
+    });
+
+    document.getElementById('logout')?.addEventListener('click', async () => {
+        if (user) {
+            try {
+                await fetch(`${supabaseUrl}/rest/v1/users?id=eq.${user.id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': supabaseKey,
+                        'Authorization': `Bearer ${supabaseKey}`,
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({ online: false })
+                });
+
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Logout Error:', error);
+                categoryMessage.textContent = 'Ошибка выхода';
+                categoryMessage.className = 'error';
+            }
+        }
+    });
+</script>
+</body>
+</html>

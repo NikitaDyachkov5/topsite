@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Ваш профиль</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 60px;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header .logo a {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        .header .user-actions {
+            display: flex;
+            align-items: center;
+        }
+        .header .user-actions a.profile-link {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+        .header .user-actions a.profile-link:hover {
+            text-decoration: underline;
+        }
+        .header .user-actions img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .header .user-actions span {
+            font-size: 16px;
+        }
+        .header .user-actions button {
+            padding: 10px 20px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+        .header .user-actions button:hover {
+            background-color: #c0392b;
+        }
+        .profile-container {
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            flex: 1;
+            max-height: 500px;
+        }
+        .profile-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .profile-header h2 {
+            color: #2c3e50;
+            margin: 0;
+        }
+        .profile-avatar {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .profile-avatar img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #3498db;
+        }
+        .profile-avatar label {
+            display: block;
+            margin-top: 10px;
+            color: #3498db;
+            cursor: pointer;
+        }
+        .profile-avatar input[type="file"] {
+            display: none;
+        }
+        .profile-info {
+            margin-bottom: 20px;
+        }
+        .profile-info p {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+        .profile-info input[type="text"],
+        .profile-info input[type="password"] {
+            padding: 8px;
+            width: 100%;
+            max-width: 300px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .profile-actions {
+            text-align: center;
+        }
+        .profile-actions button {
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .profile-actions button:hover {
+            background-color: #2980b9;
+        }
+        .error { color: red; text-align: center; }
+        .success { color: green; text-align: center; }
+        .footer {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .footer p { margin: 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo"><a href="index.html">ТестQuiz</a></div>
+        <div class="user-actions" id="userInfo"></div>
+    </div>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <h2>Ваш профиль</h2>
+        </div>
+        <div class="profile-avatar">
+            <img id="avatarPreview" src="" alt="Ваша фотография">
+            <label for="avatarUpload">Изменить фото</label>
+            <input type="file" id="avatarUpload" accept="image/*">
+        </div>
+        <div class="profile-info">
+            <p><strong>Имя:</strong> <span id="fullnameDisplay"></span> <input type="text" id="newFullname" placeholder="Новый никнейм" style="display:none;"></p>
+            <p><strong>Рейтинг:</strong> <span id="ratingDisplay"></span></p>
+            <p><strong>Новый пароль:</strong> <input type="password" id="newPassword" placeholder="Введите новый пароль"></p>
+        </div>
+        <div class="profile-actions">
+            <button onclick="saveProfile()">Сохранить</button>
+            <button onclick="cancelEdit()">Отмена</button>
+        </div>
+        <p id="message" class="error"></p>
+    </div>
+
+    <div class="footer">
+        <p>© 2025 ТестQuiz. Все права защищены. Архитектор: Амир Есимов. ❤️</p>
+    </div>
+
+    <script>
+        const supabaseUrl = 'https://fkzbxyrcgpnuaguqrwdu.supabase.co';
+        const serviceRoleKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZremJ4eXJjZ3BudWFndXFyd2R1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTIyMTQ3OSwiZXhwIjoyMDgwNzk3NDc5fQ.MHBNRnO-sI_aKWy6VENafqxbdtL6ei14eyjYULpB7sY';
+
+        let currentPhotoUrl = '';
+        const user = JSON.parse(localStorage.getItem('user'));
+        const avatarPreview = document.getElementById('avatarPreview');
+        const fullnameDisplay = document.getElementById('fullnameDisplay');
+        const ratingDisplay = document.getElementById('ratingDisplay');
+        const newFullname = document.getElementById('newFullname');
+        const newPassword = document.getElementById('newPassword');
+        const messageElement = document.getElementById('message');
+        const avatarUpload = document.getElementById('avatarUpload');
+        const userInfoElement = document.getElementById('userInfo');
+
+        if (!user) {
+            messageElement.textContent = 'Пожалуйста, авторизуйтесь';
+            messageElement.className = 'error';
+            setTimeout(() => window.location.href = 'login.html', 1000);
+        } else {
+            fullnameDisplay.textContent = user.fullname;
+            currentPhotoUrl = user.photo_url || 'https://fkzbxyrcgpnuaguqrwdu.supabase.co/storage/v1/object/public/avatars/noPhoto.png';
+            avatarPreview.src = currentPhotoUrl;
+            userInfoElement.innerHTML = `<a href="profile.html" class="profile-link"><img src="${currentPhotoUrl}" alt="Avatar"> <span>${user.fullname}</span></a><button id="logout">Выйти</button>`;
+            loadRating();
+        }
+
+        function loadRating() {
+            fetch(`${supabaseUrl}/rest/v1/users?id=eq.${user.id}&select=rating`, {
+                headers: { 'apikey': serviceRoleKey, 'Authorization': `Bearer ${serviceRoleKey}` }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const rating = Array.isArray(data) ? data[0].rating || 0 : (data.data && data.data[0].rating) || 0;
+                ratingDisplay.textContent = rating;
+            })
+            .catch(error => {
+                console.error('Error loading rating:', error);
+                messageElement.textContent = 'Ошибка загрузки рейтинга';
+                messageElement.className = 'error';
+            });
+        }
+
+        fullnameDisplay.addEventListener('click', () => {
+            if (newFullname.style.display === 'none') {
+                newFullname.style.display = 'inline';
+                fullnameDisplay.style.display = 'none';
+                newFullname.value = user.fullname;
+            }
+        });
+
+        avatarUpload.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const fileName = `${user.id}_${Date.now()}_${file.name}`;
+                try {
+                    const uploadResponse = await fetch(`${supabaseUrl}/storage/v1/object/avatars/${fileName}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${serviceRoleKey}`,
+                            'apikey': serviceRoleKey
+                        },
+                        body: file
+                    });
+
+                    if (uploadResponse.ok) {
+                        const newPhotoUrl = `${supabaseUrl}/storage/v1/object/public/avatars/${fileName}`;
+                        avatarPreview.src = newPhotoUrl;
+                        messageElement.textContent = 'Фото загружено, сохраните изменения';
+                        messageElement.className = 'success';
+                    } else {
+                        messageElement.textContent = 'Ошибка загрузки фото';
+                        messageElement.className = 'error';
+                    }
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    messageElement.textContent = 'Ошибка: ' + error.message;
+                    messageElement.className = 'error';
+                }
+            }
+        });
+
+        async function saveProfile() {
+            const updatedData = {};
+            let newPhotoUrl = avatarPreview.src !== currentPhotoUrl ? avatarPreview.src : null;
+
+            if (newFullname.style.display !== 'none' && newFullname.value.trim() !== user.fullname) {
+                updatedData.fullname = newFullname.value.trim();
+            }
+            if (newPassword.value.trim()) {
+                const hashedPassword = await hashPassword(newPassword.value.trim());
+                updatedData.password = hashedPassword;
+            }
+            if (newPhotoUrl) {
+                updatedData.photo_url = newPhotoUrl;
+            }
+
+            if (Object.keys(updatedData).length > 0) {
+                try {
+                    const response = await fetch(`${supabaseUrl}/rest/v1/users?id=eq.${user.id}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': serviceRoleKey,
+                            'Authorization': `Bearer ${serviceRoleKey}`,
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify(updatedData)
+                    });
+
+                    if (response.ok) {
+                        if (updatedData.fullname) {
+                            user.fullname = updatedData.fullname;
+                            fullnameDisplay.textContent = updatedData.fullname;
+                            newFullname.style.display = 'none';
+                            fullnameDisplay.style.display = 'inline';
+                        }
+                        if (newPhotoUrl) {
+                            user.photo_url = newPhotoUrl;
+                            currentPhotoUrl = newPhotoUrl;
+                        }
+                        newPassword.value = '';
+                        messageElement.textContent = 'Профиль обновлён!';
+                        messageElement.className = 'success';
+                        localStorage.setItem('user', JSON.stringify(user));
+                        userInfoElement.innerHTML = `<a href="profile.html" class="profile-link"><img src="${currentPhotoUrl}" alt="Avatar"> <span>${user.fullname}</span></a><button id="logout">Выйти</button>`;
+                        addLogoutListener();
+                    } else {
+                        messageElement.textContent = 'Ошибка обновления профиля';
+                        messageElement.className = 'error';
+                    }
+                } catch (error) {
+                    console.error('Update error:', error);
+                    messageElement.textContent = 'Ошибка: ' + error.message;
+                    messageElement.className = 'error';
+                }
+            } else {
+                messageElement.textContent = 'Нет изменений для сохранения';
+                messageElement.className = 'error';
+            }
+        }
+
+        function cancelEdit() {
+            newFullname.style.display = 'none';
+            fullnameDisplay.style.display = 'inline';
+            newPassword.value = '';
+            avatarPreview.src = currentPhotoUrl;
+            messageElement.textContent = '';
+            messageElement.className = '';
+        }
+
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hash = await crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(hash))
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('');
+        }
+
+        function addLogoutListener() {
+            document.getElementById('logout')?.addEventListener('click', async () => {
+                if (user) {
+                    try {
+                        await fetch(`${supabaseUrl}/rest/v1/users?id=eq.${user.id}`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'apikey': serviceRoleKey,
+                                'Authorization': `Bearer ${serviceRoleKey}`,
+                                'Prefer': 'return=minimal'
+                            },
+                            body: JSON.stringify({ online: false })
+                        });
+
+                        localStorage.removeItem('user');
+                        window.location.href = 'login.html';
+                    } catch (error) {
+                        console.error('Logout Error:', error);
+                        messageElement.textContent = 'Ошибка выхода: ' + error.message;
+                        messageElement.className = 'error';
+                    }
+                }
+            });
+        }
+
+        addLogoutListener();
+    </script>
+</body>
+</html>
