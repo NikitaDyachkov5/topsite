@@ -682,6 +682,7 @@ async function showResults() {
     testArea.classList.remove('active');
     resultsArea.classList.add('active');
     const totalQuestions = currentQuestions.length;
+    const maxPoints = currentQuestions.reduce((sum, q) => sum + q.points, 0);
 
     // Recalculate correctCount for accuracy
     correctCount = 0;
@@ -694,7 +695,26 @@ async function showResults() {
     });
     const percentage = (correctCount / totalQuestions) * 100;
 
-    resultText.innerHTML = `Вы набрали ${finalRating} баллов из ${totalQuestions}! (${percentage.toFixed(1)}% правильных ответов)`;
+    const thresholds = {
+        easy: 70,
+        medium: 60,
+        hard: 50,
+        impossible: 40,
+        mixed: 60
+    };
+    const threshold = thresholds[selectedDifficulty];
+    const minCorrect = Math.ceil((threshold / 100) * totalQuestions);
+
+    let ratingToAdd = 0;
+    if (correctCount >= minCorrect) {
+        ratingToAdd = finalRating;
+    }
+
+    resultText.innerHTML = `Вы набрали ${finalRating} баллов из ${maxPoints}! (${percentage.toFixed(1)}% правильных ответов)`;
+    if (correctCount < minCorrect) {
+        resultText.innerHTML += `<p class="error">Баллы не начислены в рейтинг, так как правильных ответов меньше ${threshold}% (${correctCount} из ${totalQuestions}).</p>`;
+    }
+
     correctAnswers.innerHTML = currentQuestions.map((q, i) => {
         const userAnswer = userAnswers[i] ? q[`option_${userAnswers[i]}`] : 'Нет ответа';
         const isCorrect = userAnswer === q[`option_${q.correct_answer}`];
@@ -705,8 +725,8 @@ async function showResults() {
 
     if (user) {
         try {
-            const newRating = (user.rating || 0) + finalRating;
-            console.log('Updating rating:', { userId: user.id, newRating, finalRating });
+            const newRating = (user.rating || 0) + ratingToAdd;
+            console.log('Updating rating:', { userId: user.id, newRating, ratingToAdd });
             const response = await fetch(`${supabaseUrl}/rest/v1/users?id=eq.${user.id}`, {
                 method: 'PATCH',
                 headers: {
@@ -721,7 +741,9 @@ async function showResults() {
             if (response.ok) {
                 user.rating = newRating;
                 localStorage.setItem('user', JSON.stringify(user));
-                resultText.innerHTML += `<p>Ваш текущий рейтинг: ${user.rating} баллов</p>`;
+                if (ratingToAdd > 0) {
+                    resultText.innerHTML += `<p>Ваш текущий рейтинг: ${user.rating} баллов</p>`;
+                }
                 loadRating();
             } else {
                 const errorText = await response.text();
