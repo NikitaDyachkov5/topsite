@@ -327,8 +327,8 @@
     </div>
 
 <script>
-    const supabaseUrl = 'https://fkzbxyrcgpnuaguqrwdu.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZremJ4eXJjZ3BudWFndXFyd2R1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTIyMTQ3OSwiZXhwIjoyMDgwNzk3NDc5fQ.MHBNRnO-sI_aKWy6VENafqxbdtL6ei14eyjYULpB7sY';
+    const supabaseUrl = 'https://grbivqputtpjwukxbncj.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdyYml2cXB1dHRwand1a3hibmNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5MjE1OTAsImV4cCI6MjA5MjQ5NzU5MH0.oQ_X_o7Ec7zxXvu4H2pYH3Xu-O-UrCzDb1wV_AL2_g4';
 
     const user = JSON.parse(localStorage.getItem('user'));
     const userInfoElement = document.getElementById('userInfo');
@@ -360,7 +360,7 @@
         categoryMessage.className = 'error';
         setTimeout(() => window.location.href = 'index.html', 1000);
     } else {
-        userInfoElement.innerHTML = `<a href="profile.html" class="profile-link"><img src="${user.photo_url || 'https://fkzbxyrcgpnuaguqrwdu.supabase.co/storage/v1/object/public/avatars/noPhoto.png'}" alt="Avatar"> <span>${user.fullname}</span></a><button id="logout">Выйти</button>`;
+        userInfoElement.innerHTML = `<a href="profile.html" class="profile-link"><img src="${user.photo_url || 'https://grbivqputtpjwukxbncj.supabase.co/storage/v1/object/public/avatars/noPhoto.png'}" alt="Avatar"> <span>${user.fullname}</span></a><button id="logout">Выйти</button>`;
         document.getElementById('navButtons').innerHTML += `<a href="chat.html">Общение</a>`;
 
         loadCategories();
