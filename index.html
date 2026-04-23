@@ -524,8 +524,8 @@
     </div>
 
 <script>
-const supabaseUrl = 'https://fkzbxyrcgpnuaguqrwdu.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZremJ4eXJjZ3BudWFndXFyd2R1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTIyMTQ3OSwiZXhwIjoyMDgwNzk3NDc5fQ.MHBNRnO-sI_aKWy6VENafqxbdtL6ei14eyjYULpB7sY';
+const supabaseUrl = 'https://grbivqputtpjwukxbncj.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdyYml2cXB1dHRwand1a3hibmNqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjkyMTU5MCwiZXhwIjoyMDkyNDk3NTkwfQ.I_wWIsgwjRad3L25YKpSnw_zQS1kwwhXVWJhfg7vdDg';
 
 const user = JSON.parse(localStorage.getItem('user'));
 const userInfoElement = document.getElementById('userInfo');
@@ -567,7 +567,7 @@ let currentReviewPage = 1;
 const itemsPerPage = 10;
 
 if (user) {
-    userInfoElement.innerHTML = `<a href="profile.html" class="profile-link"><img src="${user.photo_url || 'https://fkzbxyrcgpnuaguqrwdu.supabase.co/storage/v1/object/public/avatars/noPhoto.png'}" alt="Avatar"> <span>${user.fullname}</span></a><button id="logout">Выйти</button>`;
+    userInfoElement.innerHTML = `<a href="profile.html" class="profile-link"><img src="${user.photo_url || 'https://grbivqputtpjwukxbncj.supabase.co/storage/v1/object/public/avatars/noPhoto.png'}" alt="Avatar"> <span>${user.fullname}</span></a><button id="logout">Выйти</button>`;
     if (user.role === 'admin') {
         document.getElementById('navButtons').innerHTML += `<a href="admin.html">Админ-панель</a>`;
         document.getElementById('navButtons').innerHTML += `<a href="chat.html">Общение</a>`;
@@ -770,7 +770,7 @@ function renderRating(users) {
     ratingTable.innerHTML = sortedUsers.map((u, i) => `
         <tr>
             <td>${i + 1}</td>
-            <td><img src="${u.photo_url || 'https://fkzbxyrcgpnuaguqrwdu.supabase.co/storage/v1/object/public/avatars/noPhoto.png'}" alt="Avatar">${u.fullname}</td>
+            <td><img src="${u.photo_url || 'https://grbivqputtpjwukxbncj.supabase.co/storage/v1/object/public/avatars/noPhoto.png'}" alt="Avatar">${u.fullname}</td>
             <td>${u.rating || 0}</td>
         </tr>
     `).join('') || '<tr><td colspan="3">Нет данных</td></tr>';
@@ -930,7 +930,7 @@ async function loadReviews(page = 1) {
         }
 reviewsMessages.innerHTML = reviews.map(r => `
     <p>
-        <img src="${r.users?.photo_url || 'https://fkzbxyrcgpnuaguqrwdu.supabase.co/storage/v1/object/public/avatars/noPhoto.png'}" alt="${r.users?.fullname || 'Аноним'}'s avatar" style="width: 30px; height: 30px; border-radius: 50%; vertical-align: middle;">
+        <img src="${r.users?.photo_url || 'https://grbivqputtpjwukxbncj.supabase.co/storage/v1/object/public/avatars/noPhoto.png'}" alt="${r.users?.fullname || 'Аноним'}'s avatar" style="width: 30px; height: 30px; border-radius: 50%; vertical-align: middle;">
         <strong>${r.users?.fullname || 'Аноним'}</strong> 
         (${new Date(r.timestamp).toLocaleString()}): 
         ${r.message || 'Отзыв пуст'} 
