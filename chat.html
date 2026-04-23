@@ -335,8 +335,8 @@
 <script>
 console.log('Script started in chat.html');
 
-const supabaseUrl = 'https://fkzbxyrcgpnuaguqrwdu.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZremJ4eXJjZ3BudWFndXFyd2R1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTIyMTQ3OSwiZXhwIjoyMDgwNzk3NDc5fQ.MHBNRnO-sI_aKWy6VENafqxbdtL6ei14eyjYULpB7sY';
+const supabaseUrl = 'https://grbivqputtpjwukxbncj.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdyYml2cXB1dHRwand1a3hibmNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5MjE1OTAsImV4cCI6MjA5MjQ5NzU5MH0.oQ_X_o7Ec7zxXvu4H2pYH3Xu-O-UrCzDb1wV_AL2_g4';
 
 const user = JSON.parse(localStorage.getItem('user') || '{}');
 console.log('User in chat.html:', user);
@@ -352,7 +352,7 @@ const reviewsMessages = document.getElementById('reviewsMessages');
 
 if (user && user.id) {
     console.log('User authenticated:', user.fullname, user.role);
-    userInfoElement.innerHTML = `<a href="profile.html" class="profile-link"><img src="${user.photo_url || 'https://fkzbxyrcgpnuaguqrwdu.supabase.co/storage/v1/object/public/avatars/noPhoto.png'}" alt="Avatar"> <span>${user.fullname}</span></a><button id="logout">Выйти</button>`;
+    userInfoElement.innerHTML = `<a href="profile.html" class="profile-link"><img src="${user.photo_url || 'https://grbivqputtpjwukxbncj.supabase.co/storage/v1/object/public/avatars/noPhoto.png'}" alt="Avatar"> <span>${user.fullname}</span></a><button id="logout">Выйти</button>`;
     const navButtons = document.getElementById('navButtons');
     if (user.role === 'admin') {
         navButtons.innerHTML += `<a href="admin.html">Админ-панель</a>`;
@@ -392,7 +392,7 @@ async function loadChatMessages() {
                 const isAdmin = user && user.role === 'admin';
                 return `
                     <p>
-                        <img src="${m.user.photo_url || 'https://fkzbxyrcgpnuaguqrwdu.supabase.co/storage/v1/object/public/avatars/noPhoto.png'}" alt="${m.user.fullname}'s avatar">
+                        <img src="${m.user.photo_url || 'https://grbivqputtpjwukxbncj.supabase.co/storage/v1/object/public/avatars/noPhoto.png'}" alt="${m.user.fullname}'s avatar">
                         <strong>${m.user.fullname}</strong> (${new Date(m.timestamp).toLocaleString()}): ${m.message}
                         ${isAdmin ? `<span class="message-actions"><button onclick="deleteChatMessage(${m.id})">Удал.</button></span>` : ''}
                     </p>
@@ -477,7 +477,7 @@ async function loadReviews() {
             const r = reviews[0];
             reviewsMessages.innerHTML = `
                 <p>
-                    <img src="${r.user.photo_url || 'https://fkzbxyrcgpnuaguqrwdu.supabase.co/storage/v1/object/public/avatars/noPhoto.png'}" alt="${r.user.fullname}'s avatar">
+                    <img src="${r.user.photo_url || 'https://grbivqputtpjwukxbncj.supabase.co/storage/v1/object/public/avatars/noPhoto.png'}" alt="${r.user.fullname}'s avatar">
                     <strong>${r.user.fullname}</strong> (${new Date(r.timestamp).toLocaleString()}): ${r.message}
                     <span class="star-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
                     <span class="review-actions">
